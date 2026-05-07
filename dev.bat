@@ -1,0 +1,1 @@
+npx nodemon --watch src --exec ts-node src/server.ts

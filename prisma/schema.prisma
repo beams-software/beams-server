@@ -1,0 +1,41 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Tokens {
+  token String @unique
+}
+
+model Positions {
+  id             Int          @id @default(autoincrement())
+  priorityNumber Int
+  name           String
+  wcs            String
+  candidates     Candidates[]
+}
+
+model Candidates {
+  admid      Int       @unique
+  name       String
+  grade      Int
+  house      String
+  votes      Int       @default(0)
+  photo      String
+  position   Positions @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  positionId Int
+}
+
+model Voters {
+  admid     Int     @unique
+  name      String
+  grade     Int
+  class     String
+  house     String
+  voted     Boolean @default(false)
+  votedInfo Json
+}

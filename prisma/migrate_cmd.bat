@@ -1,0 +1,1 @@
+npx prisma migrate dev --name pos+cand
