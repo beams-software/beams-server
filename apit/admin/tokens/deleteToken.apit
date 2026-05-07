@@ -1,0 +1,33 @@
+{
+  "method": "delete",
+  "url": "http://localhost:3000/admin/token/deleteToken",
+  "headers": {
+    "X-Token": "admin",
+    "Content-Type": "application/json"
+  },
+  "headersArray": [
+    [
+      "ede0fb44-4406-4dff-aaa2-0a84acf1d1bf",
+      "X-Token",
+      "admin",
+      true,
+      "STRING"
+    ],
+    [
+      "2f7e6c1a-5251-4c26-b10f-c5e6d503a804",
+      "Content-Type",
+      "application/json",
+      true,
+      "STRING"
+    ]
+  ],
+  "data": {
+    "token": "test"
+  },
+  "backup": {
+    "bodyType": "raw",
+    "data": {},
+    "bodySubType": "json",
+    "rawData": "{\n\"token\":\"test\"\n}"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "url": "http://localhost:3000/admin/token/check",
+  "headers": {
+    "X-Token": "admin"
+  },
+  "headersArray": [
+    [
+      "e043a0e0-faff-466f-a843-45f545a72647",
+      "X-Token",
+      "admin",
+      true,
+      "STRING"
+    ]
+  ]
+}

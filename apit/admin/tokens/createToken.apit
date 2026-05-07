@@ -1,0 +1,35 @@
+{
+  "url": "http://localhost:3000/admin/token/createToken",
+  "data": {
+    "token": "test"
+  },
+  "backup": {
+    "bodyType": "raw",
+    "data": {},
+    "bodySubType": "json",
+    "rawData": "{\n  \"token\" : \"test\"\n}"
+  },
+  "headers": {
+    "Content-Type": "application/json",
+    "X-token": "admin"
+  },
+  "headersArray": [
+    [
+      "0aee5082-c8de-45bb-9cf8-64b60ca97432",
+      "Content-Type",
+      "application/json",
+      true,
+      "STRING"
+    ],
+    [
+      "80d8cf20-33df-4c1c-9dfd-fe0c1db5d88b",
+      "X-token",
+      "admin",
+      true,
+      "STRING"
+    ]
+  ],
+  "method": "post",
+  "params": {},
+  "paramsArray": []
+}
