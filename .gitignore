@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-.venv
-__pycache__/
-=======
 node_modules
 # Keep environment variables out of version control
 .env
 
 prisma/migrations
 prisma/dev.db
->>>>>>> ts-init/main
