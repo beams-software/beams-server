@@ -2,6 +2,7 @@
   "devDependencies": {
     "@types/express": "^5.0.1",
     "@types/multer": "^1.4.12",
+    "@types/node": "^25.6.0",
     "nodemon": "^3.1.10",
     "prisma": "^6.7.0",
     "ts-node": "^10.9.2",
@@ -11,8 +12,10 @@
     "@prisma/client": "^6.7.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "xlsx": "^0.18.5",
-    "multer": "^1.4.5-lts.2"
+    "multer": "^1.4.5-lts.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "xlsx": "^0.18.5"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

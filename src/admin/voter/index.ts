@@ -46,6 +46,16 @@ const pseudoVoterToVoter = (voters: PseudoVoter[]): Voter[] => {
     })
 }
 
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get all users
+ *     responses:
+ *       200:
+ *         description: Success
+ */
+
 router.get("/getVoters", async (req, res) => {
     const loggedIn = await returnIfNotAuthorized(req, res);
     if (!loggedIn) return;
