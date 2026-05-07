@@ -1,7 +1,7 @@
 import socketio
 import uvicorn
 from fastapi import FastAPI
-from routes import mainRouter
+from routes_ import mainRouter
 
 api = FastAPI()
 
