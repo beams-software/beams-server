@@ -1,11 +1,12 @@
 {
-  "url": "http://localhost:3001/admin/token/check",
+  "method": "delete",
+  "url": "http://localhost:3001/admin/position/deletePosition/3",
   "headers": {
     "X-Token": "admin"
   },
   "headersArray": [
     [
-      "e043a0e0-faff-466f-a843-45f545a72647",
+      "8d31d3f6-5b87-40fd-8872-98b8e621b1e1",
       "X-Token",
       "admin",
       true,

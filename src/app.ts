@@ -1,9 +1,11 @@
 import express, { Request, Response } from 'express';
 import prisma from './prisma';
 import adminRoutes from './admin'
+import cors from "cors"
 
 require('dotenv').config()
 const app = express();
+app.use(cors());
 
 app.use(express.json());
 

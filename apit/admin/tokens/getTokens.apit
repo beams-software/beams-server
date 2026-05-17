@@ -1,5 +1,5 @@
 {
-  "url": "http://localhost:3000/admin/token/getTokens",
+  "url": "http://localhost:3001/admin/token/getTokens",
   "headers": {
     "X-Token": "admin"
   },

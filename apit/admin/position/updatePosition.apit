@@ -1,0 +1,35 @@
+{
+  "method": "post",
+  "url": "http://localhost:3001/admin/position/updatePosition",
+  "headers": {
+    "X-Token": "admin",
+    "Content-Type": "application/json"
+  },
+  "headersArray": [
+    [
+      "67843af9-cf84-4c81-bbef-9377f34c0704",
+      "X-Token",
+      "admin",
+      true,
+      "STRING"
+    ],
+    [
+      "ca868d3b-2eff-44b4-933b-ccca7ad033b2",
+      "Content-Type",
+      "application/json",
+      true,
+      "STRING"
+    ]
+  ],
+  "backup": {
+    "bodyType": "raw",
+    "bodySubType": "json",
+    "rawData": "{\n  \"id\": 1,\n  \"name\": \"Test 1\",\n  \"priority\": 999,\n  \"wcs\": \"02;08\"\n}"
+  },
+  "data": {
+    "id": 1,
+    "name": "Test 1",
+    "priority": 999,
+    "wcs": "02;08"
+  }
+}

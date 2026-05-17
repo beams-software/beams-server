@@ -1,0 +1,15 @@
+{
+  "url": "http://localhost:3001/admin/position/getPositions",
+  "headers": {
+    "x-token": "admin"
+  },
+  "headersArray": [
+    [
+      "0e5c76ab-bef0-4fcf-ba52-03415942e5bc",
+      "x-token",
+      "admin",
+      true,
+      "STRING"
+    ]
+  ]
+}

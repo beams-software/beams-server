@@ -1,33 +1,35 @@
 {
-  "method": "delete",
-  "url": "http://localhost:3001/admin/token/deleteToken",
+  "url": "http://localhost:3001/admin/position/createPosition",
+  "method": "post",
   "headers": {
     "X-Token": "admin",
     "Content-Type": "application/json"
   },
   "headersArray": [
     [
-      "ede0fb44-4406-4dff-aaa2-0a84acf1d1bf",
+      "70919205-672c-4db3-a00a-1cbb72a50535",
       "X-Token",
       "admin",
       true,
       "STRING"
     ],
     [
-      "2f7e6c1a-5251-4c26-b10f-c5e6d503a804",
+      "53bcc783-65f6-44db-90c2-8e9d77a9aaa4",
       "Content-Type",
       "application/json",
       true,
       "STRING"
     ]
   ],
-  "data": {
-    "token": "test"
-  },
   "backup": {
     "bodyType": "raw",
     "data": {},
     "bodySubType": "json",
-    "rawData": "{\n\"token\":\"test\"\n}"
+    "rawData": "{\n  \"name\" : \"Test 2\",\n  \"wcs\" : \"2;21;40\",\n  \"priority\": 1000\n}"
+  },
+  "data": {
+    "name": "Test 2",
+    "wcs": "2;21;40",
+    "priority": 1000
   }
 }

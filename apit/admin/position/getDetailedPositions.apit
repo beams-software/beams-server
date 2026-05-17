@@ -1,11 +1,11 @@
 {
-  "url": "http://localhost:3001/admin/token/check",
+  "url": "http://localhost:3001/admin/position/getDetailedPositions",
   "headers": {
     "X-Token": "admin"
   },
   "headersArray": [
     [
-      "e043a0e0-faff-466f-a843-45f545a72647",
+      "d153c4c2-404c-46be-ac08-ddc65235e6b5",
       "X-Token",
       "admin",
       true,
