@@ -1,4 +1,5 @@
 import prisma from "../../prisma";
+import fs from "fs";
 
 interface Candidate {
     admid: number,
@@ -74,6 +75,13 @@ const updateCandidate = async ({ admid, name, grade, house, votes, photo, positi
 }
 
 const deleteCandidate = async (admid: number) => {
+    const candidateToDelete = await getCandidateById(admid);
+    if (!candidateToDelete) {
+        return null;
+    }
+
+    fs.unlink(`./static/candidates/${candidateToDelete.photo}`, (err) => { })
+    
     const candidate = await prisma.candidates.delete({
         where: {
             admid: admid
