@@ -85,5 +85,18 @@ const getDetailedPositions = async () => {
     return positions;
 }
 
+const updatePriorities = async (priorities: { id: number, priorityNumber: number }[]) => {
+    priorities.forEach(async (priority) => {
+        await prisma.positions.update({
+            where: {
+                id: priority.id
+            },
+            data: {
+                priorityNumber: priority.priorityNumber
+            }
+        })
+    });
+    return true;
+}
 
-export { getPositions, createPosition, updatePosition, deletePosition, getDetailedPositions, getPositionInfo };
+export { getPositions, createPosition, updatePosition, deletePosition, getDetailedPositions, getPositionInfo, updatePriorities };

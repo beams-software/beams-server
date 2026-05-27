@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createPosition, deletePosition, getDetailedPositions, getPositionInfo, getPositions, updatePosition } from "./utils";
+import { createPosition, deletePosition, getDetailedPositions, getPositionInfo, getPositions, updatePosition, updatePriorities } from "./utils";
 import { returnIfNotAuthorized } from "../tokens/utils";
 import fs from "fs";
 
@@ -117,6 +117,17 @@ router.delete("/deleteAllPositions", async (req, res) => {
     res.json({
         status: 200,
         result: "All positions deleted"
+    })
+});
+
+router.post("/reorderPositions", async (req, res) => {
+    const loggedIn = await returnIfNotAuthorized(req, res);
+    if (!loggedIn) return;
+    const { positions } = req.body;
+    const done = await updatePriorities(positions);
+    res.json({
+        status: 200,
+        result: done
     })
 });
 
