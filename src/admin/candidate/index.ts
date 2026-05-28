@@ -60,6 +60,7 @@ router.post("/createCandidate", uploadCandidate.single('photo'), async (req, res
 );
 
 router.post("/updateCandidate", uploadCandidate.single('photo'), async (req, res) => {
+    // TODO: remember to resend all the data back to the beams voter end
     const loggedIn = await returnIfNotAuthorized(req, res);
     if (!loggedIn) return;
     const oldCandidate = await getCandidateById(parseInt(req.body.admid));
@@ -71,9 +72,9 @@ router.post("/updateCandidate", uploadCandidate.single('photo'), async (req, res
         return;
     }
     fs.unlink(`./static/candidates/${oldCandidate.photo}`, async (err) => {
-        const { admid, name, grade, house, votes, positionId } = req.body;
+        const { admid, name, grade, house, votes, positionId, changeVote} = req.body;
         const parsedAdmid = parseInt(admid);
-        const parsedVotes = parseInt(votes);
+        const parsedVotes = changeVote === "true" ? parseInt(votes) : oldCandidate.votes;
         const parsedPositionId = parseInt(positionId);
         const parsedGrade = parseInt(grade);
         try {
