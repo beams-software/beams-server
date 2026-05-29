@@ -118,19 +118,51 @@ const createVoter = async (voter : Voter) => {
     return voter_;
 }
 
-const createMultipleVoters = async (voters:Voter[]) => {
-    const createdVoters = await prisma.voters.createMany({
-        data: voters.map(voter => ({
-            name: voter.name,
-            admid: voter.admid,
-            grade: voter.grade,
-            house: voter.house,
-            class: voter.class,
-            voted: false,
-            votedInfo: {}
-        }))
-    })
-    return createdVoters;
+const createMultipleVoters = async (voters: Voter[]) => {
+  const admids = voters.map(v => v.admid)
+
+  const existingVoters = await prisma.voters.findMany({
+    where: {
+      admid: {
+        in: admids
+      }
+    }
+  })
+
+  const existingMap = new Map(
+    existingVoters.map(v => [v.admid, v])
+  )
+
+  const conflicts = voters
+    .filter(v => existingMap.has(v.admid))
+    .map(v => ({
+      uploadedRow: v,
+      existingRow: existingMap.get(v.admid)!
+    }))
+
+  if (conflicts.length > 0) {
+    return {
+      success: false,
+      conflicts
+    }
+  }
+
+  const createdVoters = await prisma.voters.createMany({
+    data: voters.map(voter => ({
+      name: voter.name,
+      admid: voter.admid,
+      grade: voter.grade,
+      house: voter.house,
+      class: voter.class,
+      voted: false,
+      votedInfo: {}
+    }))
+  })
+
+  return {
+    success: true,
+    created: createdVoters.count
+  }
 }
 
 const updateVoter = async (voter:Voter) => {
@@ -190,9 +222,20 @@ const deleteVotersByGrade = async (grade: number) => {
 const deleteAllVoters = async () => {
     const voters = await prisma.voters.deleteMany({})
     return voters;
-
 }
 
+const getGradesAndCount = async () => {
+    const grades = await prisma.voters.groupBy({
+        by: ['grade'],
+        _count: {
+            grade: true
+        }
+    });
+    return grades.map(grade => ({
+        grade: grade.grade,
+        count: grade._count.grade
+    }));
+}
 
 export {
     getVoters,
@@ -213,5 +256,6 @@ export {
     deleteVotersByHouse,
     deleteVotersByGrade,
     deleteAllVoters,
+    getGradesAndCount,
     Voter
 }

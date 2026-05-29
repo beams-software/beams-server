@@ -9,6 +9,7 @@ import {
     deleteVotersByClassAndGrade,
     deleteVotersByGrade,
     deleteVotersByHouse,
+    getGradesAndCount,
     getUnvotedCount,
     getUnvotedVoters,
     getVotedCount,
@@ -172,7 +173,21 @@ router.post('/createMultipleVoters', upload.single('file'), async (req, res) => 
             return;
         }
         const json = XLSX.utils.sheet_to_json(worksheet) as Voter[];
-        await createMultipleVoters((json));
+        const result = await createMultipleVoters((json));
+        if (!result.success) {
+            res.json({
+                status: 400,
+                result: "Conflicts found while creating voters",
+                conflicts: result.conflicts
+            });
+            fs.unlink(filePath, (err) => { });
+            return;
+        }else{
+            res.json({
+                status: 200,
+                result: `Voters created successfully (${result.created} created)`
+            });
+        }
     } catch (error) {
         res.json({
             status: 500,
@@ -183,11 +198,7 @@ router.post('/createMultipleVoters', upload.single('file'), async (req, res) => 
         return;
     }
 
-    res.json({
-        status: 200,
-        result: "Voters created successfully"
-    });
-
+    
     fs.unlink(filePath, (err) => { });
 });
 
@@ -305,5 +316,15 @@ router.delete('/deleteAllVoters', async (req, res) => {
     }
 });
 
+router.get('/getGradesAndCount', async (req, res) => {
+    const loggedIn = await returnIfNotAuthorized(req, res);
+    if (!loggedIn) return;
+
+    const result = await getGradesAndCount();
+    res.json({
+        status: 200,
+        result: result
+     });
+});
 
 export default router;
