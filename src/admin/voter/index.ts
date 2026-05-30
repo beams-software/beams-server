@@ -47,7 +47,7 @@ export const multipleVoterSchema = z.array(
     votedInfo: z.object({
       createdAt: z.string().default(() => new Date().toISOString()),
       editedAt: z.string().default(() => new Date().toISOString()),
-      absent: z.boolean().default(false),
+      absent: z.coerce.boolean().default(false),
       votingData: z
         .object({
           votedAt: z.string(),
@@ -72,7 +72,7 @@ export const VoterSchema = z.object({
   votedInfo: z.object({
     createdAt: z.string().default(() => new Date().toISOString()),
     editedAt: z.string().default(() => new Date().toISOString()),
-    absent: z.boolean().default(false),
+    absent: z.coerce.boolean().default(false),
     votingData: z
       .object({
         votedAt: z.string(),
