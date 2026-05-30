@@ -6,8 +6,8 @@ interface Voter{
     grade: number;
     house: string;
     class: string;
-    voted?: boolean;
-    votedInfo?: object;
+    voted: boolean;
+    votedInfo: object;
 }
 
 const getVoters = async () => {
@@ -154,8 +154,8 @@ const createMultipleVoters = async (voters: Voter[]) => {
       grade: voter.grade,
       house: voter.house,
       class: voter.class,
-      voted: false,
-      votedInfo: {}
+      voted: voter.voted,
+      votedInfo: voter.votedInfo
     }))
   })
 
