@@ -43,11 +43,11 @@ export const multipleVoterSchema = z.array(
     grade: z.coerce.number(),
     house: z.enum(["WINTER", "SUMMER", "SPRING"]),
     class: z.coerce.string(),
-    voted: z.stringbool().default(false),
+    voted: z.stringbool().default(false).or(z.boolean().default(false)),
     votedInfo: z.object({
       createdAt: z.string().default(() => new Date().toISOString()),
       editedAt: z.string().default(() => new Date().toISOString()),
-      absent: z.stringbool().default(false),
+      absent: z.stringbool().default(false).or(z.boolean().default(false)),
       votingData: z
         .object({
           votedAt: z.string(),
@@ -68,11 +68,11 @@ export const VoterSchema = z.object({
   grade: z.coerce.number(),
   house: z.enum(["WINTER", "SUMMER", "SPRING"]),
   class: z.coerce.string(),
-  voted: z.stringbool().default(false),
+  voted: z.stringbool().default(false).or(z.boolean().default(false)),
   votedInfo: z.object({
     createdAt: z.string().default(() => new Date().toISOString()),
     editedAt: z.string().default(() => new Date().toISOString()),
-    absent: z.stringbool().default(false),
+    absent: z.stringbool().default(false).or(z.boolean().default(false)),
     votingData: z
       .object({
         votedAt: z.string(),
