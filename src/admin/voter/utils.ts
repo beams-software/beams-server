@@ -111,8 +111,8 @@ const createVoter = async (voter : Voter) => {
             grade: voter.grade,
             house: voter.house,
             class: voter.class,
-            voted: false,
-            votedInfo: {}
+            voted: voter.voted,
+            votedInfo: voter.votedInfo
         }
     })
     return voter_;
