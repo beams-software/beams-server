@@ -40,7 +40,7 @@ router.post("/createCandidate", uploadCandidate.single('photo'), async (req, res
             name,
             grade: parsedGrade,
             house,
-            votes: parsedVotes,
+            startingVotes: parsedVotes,
             photo: req.file?.filename as string,
             positionId: parsedPositionId
         });
@@ -72,9 +72,9 @@ router.post("/updateCandidate", uploadCandidate.single('photo'), async (req, res
         return;
     }
     fs.unlink(`./static/candidates/${oldCandidate.photo}`, async (err) => {
-        const { admid, name, grade, house, votes, positionId, changeVote} = req.body;
+        const { admid, name, grade, house, startingVotes, positionId, changeVote} = req.body;
         const parsedAdmid = parseInt(admid);
-        const parsedVotes = changeVote === "true" ? parseInt(votes) : oldCandidate.votes;
+        const parsedStartingVotes = changeVote === "true" ? parseInt(startingVotes) : oldCandidate.startingVotes;
         const parsedPositionId = parseInt(positionId);
         const parsedGrade = parseInt(grade);
         try {
@@ -83,7 +83,7 @@ router.post("/updateCandidate", uploadCandidate.single('photo'), async (req, res
                 name,
                 grade: parsedGrade,
                 house,
-                votes: parsedVotes,
+                startingVotes: parsedStartingVotes,
                 photo: req.file?.filename as string,
                 positionId: parsedPositionId
             });

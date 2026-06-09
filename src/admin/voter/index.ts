@@ -6,9 +6,12 @@ import {
   createVoter,
   deleteAllVoters,
   deleteVoter,
+  deleteVoters,
   deleteVotersByClassAndGrade,
   deleteVotersByGrade,
   deleteVotersByHouse,
+  deleteVotes,
+  getClassesAndCount,
   getGradesAndCount,
   getUnvotedCount,
   getUnvotedVoters,
@@ -16,9 +19,12 @@ import {
   getVotedVoters,
   getVoters,
   getVotersByClass,
+  getVotersByGrade,
   getVotersByClassAndGrade,
   getVotersByHouse,
   getVotersWithoutVotedInfo,
+  markAbsent,
+  markPresent,
   updateVoter,
   Voter,
 } from "./utils";
@@ -106,6 +112,17 @@ router.get("/getDetailedVoters", async (req, res) => {
   });
 });
 
+router.get("/getVotersByGrade/:grade", async (req, res) => {
+  const loggedIn = await returnIfNotAuthorized(req, res);
+  if (!loggedIn) return;
+  const grade = parseInt(req.params.grade);
+  const voters = await getVotersByGrade(grade);
+  res.json({
+    status: 200,
+    result: voters,
+  });
+});
+
 router.get("/getVotersByClass/:className", async (req, res) => {
   const loggedIn = await returnIfNotAuthorized(req, res);
   if (!loggedIn) return;
@@ -183,19 +200,27 @@ router.get("/getUnvotedCount", async (req, res) => {
 router.post("/createVoter", async (req, res) => {
   const loggedIn = await returnIfNotAuthorized(req, res);
   if (!loggedIn) return;
-  const data = VoterSchema.safeParse(req.body);
-  if (data.success) {
-    const voter = await createVoter(data.data);
-    res.json({
-      status: 200,
-      result: voter,
-      success: true
-    });
-  }else {
+  try {
+    const data = VoterSchema.safeParse(req.body);
+    if (data.success) {
+      const voter = await createVoter(data.data);
+      res.json({
+        status: 200,
+        result: voter,
+        success: true,
+      });
+    } else {
+      res.json({
+        status: 400,
+        success: false,
+        error: data.error,
+      });
+    }
+  } catch (error) {
     res.json({
       status: 400,
       success: false,
-      error: data.error
+      error: error
     })
   }
 });
@@ -237,7 +262,7 @@ router.post(
         const result = await createMultipleVoters(json.data);
         if (!result.success) {
           res.json({
-            status: 400,
+            status: 401,
             result: "Conflicts found while creating voters",
             conflicts: result.conflicts,
             success: false,
@@ -254,7 +279,7 @@ router.post(
         }
       } else {
         res.json({
-          status: 400,
+          status: 402,
           success: json.success,
           error: json.error,
         });
@@ -277,13 +302,13 @@ router.post(
 router.post("/updateVoter", async (req, res) => {
   const loggedIn = await returnIfNotAuthorized(req, res);
   if (!loggedIn) return;
-  const data = VoterSchema.safeParse(req.body)
+  const data = VoterSchema.safeParse(req.body);
   if (!data.success) {
     res.json({
       status: 400,
       success: false,
-      error: data.error
-    })
+      error: data.error,
+    });
     return;
   }
   try {
@@ -408,6 +433,105 @@ router.get("/getGradesAndCount", async (req, res) => {
     status: 200,
     result: result,
   });
+});
+
+router.post("/markAbsent", async (req, res) => {
+  const loggedIn = await returnIfNotAuthorized(req, res);
+  if (!loggedIn) return;
+
+  const { admids } = req.body;
+  try {
+    await markAbsent(z.array(z.number()).parse(admids));
+    res.json({
+      status: 200,
+      result: "Voters marked as absent",
+    });
+  } catch (error) {
+    res.json({
+      status: 500,
+      result: "Error marking voters as absent",
+      error: error,
+    });
+  }
+});
+
+router.post("/markPresent", async (req, res) => {
+  const loggedIn = await returnIfNotAuthorized(req, res);
+  if (!loggedIn) return;
+
+  const { admids } = req.body;
+  try {
+    await markPresent(z.array(z.number()).parse(admids));
+    res.json({
+      status: 200,
+      result: "Voters marked as present",
+    });
+  } catch (error) {
+    res.json({
+      status: 500,
+      result: "Error marking voters as present",
+      error: error,
+    });
+  }
+});
+
+router.post("/deleteVotes", async (req, res) => {
+  const loggedIn = await returnIfNotAuthorized(req, res);
+  if (!loggedIn) return;
+  const { admids } = req.body;
+  try {
+    await deleteVotes(z.array(z.number()).parse(admids));
+    res.json({
+      status: 200,
+      result: "Votes deleted for voters",
+    });
+  }
+    catch (error) {
+      res.json({
+        status: 500,
+        result: "Error deleting votes for voters",
+        error: error,
+      });
+    }
+});
+
+router.post("/deleteVoters", async (req, res) => {
+  const loggedIn = await returnIfNotAuthorized(req, res);
+  if (!loggedIn) return;
+  const { admids } = req.body;
+  try {
+    await deleteVoters(z.array(z.number()).parse(admids));
+    res.json({
+      status: 200,
+      result: "Voters deleted",
+    });
+  }
+    catch (error) {
+      res.json({
+        status: 500,
+        result: "Error deleting voters",
+        error: error,
+      });
+    }
+});
+
+router.get("/getClassesAndCount/:grade", async (req, res) => {
+  const loggedIn = await returnIfNotAuthorized(req, res);
+  if (!loggedIn) return;
+  const grade = parseInt(req.params.grade);
+  try {
+    const result = await getClassesAndCount(grade);
+    res.json({
+      status: 200,
+      result: result,
+    });
+  } catch (error) {
+    res.json({
+      status: 500,
+      result: "Error getting classes and count",
+      error: error,
+    });
+  }
 });
 
 export default router;

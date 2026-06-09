@@ -6,7 +6,7 @@ interface Candidate {
     name: string,
     grade: number,
     house: string,
-    votes: number,
+    startingVotes: number,
     photo: string,
     positionId: number
 }
@@ -14,7 +14,12 @@ interface Candidate {
 const getCandidates = async () => {
     const candidates = await prisma.candidates.findMany({
         include: {
-            position: true
+            position: true,
+            _count: {
+                select: {
+                    votes: true
+                }
+            }
         },
         orderBy: [
             {
@@ -35,6 +40,13 @@ const getCandidatesByPosition = async (positionId: number) => {
         where: {
             positionId: positionId
         },
+        include: {
+            _count: {
+                select: {
+                    votes: true
+                }
+            }
+        },
         orderBy: {
             name: 'asc',
         }
@@ -42,14 +54,14 @@ const getCandidatesByPosition = async (positionId: number) => {
     return candidates;
 }
 
-const createCandidate = async ({ admid, name, grade, house, votes, photo, positionId }: Candidate) => {
+const createCandidate = async ({ admid, name, grade, house, startingVotes, photo, positionId }: Candidate) => {
     const candidate = await prisma.candidates.create({
         data: {
             admid: admid,
             name: name,
             grade: grade,
             house: house,
-            votes: votes,
+            startingVotes: startingVotes,
             photo: photo,
             positionId: positionId
         }
@@ -57,7 +69,7 @@ const createCandidate = async ({ admid, name, grade, house, votes, photo, positi
     return candidate;
 }
 
-const updateCandidate = async ({ admid, name, grade, house, votes, photo, positionId }: Candidate) => {
+const updateCandidate = async ({ admid, name, grade, house, startingVotes, photo, positionId }: Candidate) => {
     const candidate = await prisma.candidates.update({
         where: {
             admid: admid
@@ -66,7 +78,7 @@ const updateCandidate = async ({ admid, name, grade, house, votes, photo, positi
             name: name,
             grade: grade,
             house: house,
-            votes: votes,
+            startingVotes: startingVotes,
             photo: photo,
             positionId: positionId
         }

@@ -1,261 +1,403 @@
 import prisma from "../../prisma";
 
-interface Voter{
-    admid: number;
-    name: string;
-    grade: number;
-    house: string;
-    class: string;
-    voted: boolean;
-    votedInfo: object;
+interface Voter {
+  admid: number;
+  name: string;
+  grade: number;
+  house: string;
+  class: string;
+  voted: boolean;
+  votedInfo: object;
 }
 
 const getVoters = async () => {
-    const voters = await prisma.voters.findMany({});
-    return voters;
-}
+  const voters = await prisma.voters.findMany({});
+  return voters;
+};
 
 const getVotersWithoutVotedInfo = async () => {
-    const voters = await prisma.voters.findMany({
-        select:{
-            admid: true,
-            name: true,
-            grade: true,
-            house: true,
-            class: true,
-            voted: true,
-            votedInfo: false
-        }
-    })
-    
-    return voters;
-}
+  const voters = await prisma.voters.findMany({
+    select: {
+      admid: true,
+      name: true,
+      grade: true,
+      house: true,
+      class: true,
+      voted: true,
+      votedInfo: false,
+    },
+  });
+
+  return voters;
+};
 const getVotedVoters = async () => {
-    const voters = await prisma.voters.findMany({
-        where: {
-            voted: true
-        }
-    });
-    return voters;
-}
+  const voters = await prisma.voters.findMany({
+    where: {
+      voted: true,
+    },
+  });
+  return voters;
+};
 
 const getUnvotedVoters = async () => {
-    const voters = await prisma.voters.findMany({
-        where: {
-            voted: false
-        }
-    });
-    return voters;
-}
+  const voters = await prisma.voters.findMany({
+    where: {
+      voted: false,
+    },
+  });
+  return voters;
+};
 
 const getVotedCount = async () => {
-    const count = await prisma.voters.count({
-        where: {
-            voted: true
-        }
-    });
-    return count;
-}
+  const count = await prisma.voters.count({
+    where: {
+      voted: true,
+    },
+  });
+  return count;
+};
 
 const getUnvotedCount = async () => {
-    const count = await prisma.voters.count({
-        where: {
-            voted: false
-        }
-    });
-    return count;
-}
+  const count = await prisma.voters.count({
+    where: {
+      voted: false,
+    },
+  });
+  return count;
+};
 
 const getVotersByClass = async (className: string) => {
-    const voters = await prisma.voters.findMany({
-        where: {
-            class: className
-        }
-    });
-    return voters;
-}
+  const voters = await prisma.voters.findMany({
+    where: {
+      class: className,
+    },
+  });
+  return voters;
+};
 
 const getVotersByGrade = async (grade: number) => {
-    const voters = await prisma.voters.findMany({
-        where: {
-            grade: grade
-        }
-    });
-    return voters;
-}
+  const voters = await prisma.voters.findMany({
+    where: {
+      grade: grade,
+    },
+  });
+  return voters;
+};
 
 const getVotersByHouse = async (house: string) => {
-    const voters = await prisma.voters.findMany({
-        where: {
-            house: house
-        }
-    });
-    return voters;
-}
+  const voters = await prisma.voters.findMany({
+    where: {
+      house: house,
+    },
+  });
+  return voters;
+};
 
 const getVotersByClassAndGrade = async (className: string, grade: number) => {
-    const voters = await prisma.voters.findMany({
-        where: {
-            class: className,
-            grade: grade
-        }
-    });
-    return voters;
-}
-
-const createVoter = async (voter : Voter) => {
-    const voter_ = await prisma.voters.create({
-        data: {
-            name: voter.name,
-            admid: voter.admid,
-            grade: voter.grade,
-            house: voter.house,
-            class: voter.class,
-            voted: voter.voted,
-            votedInfo: voter.votedInfo
-        }
-    })
-    return voter_;
-}
-
-const createMultipleVoters = async (voters: Voter[]) => {
-  const admids = voters.map(v => v.admid)
-
-  const existingVoters = await prisma.voters.findMany({
+  const voters = await prisma.voters.findMany({
     where: {
-      admid: {
-        in: admids
-      }
-    }
-  })
+      class: className,
+      grade: grade,
+    },
+  });
+  return voters;
+};
 
-  const existingMap = new Map(
-    existingVoters.map(v => [v.admid, v])
-  )
-
-  const conflicts = voters
-    .filter(v => existingMap.has(v.admid))
-    .map(v => ({
-      uploadedRow: v,
-      existingRow: existingMap.get(v.admid)!
-    }))
-
-  if (conflicts.length > 0) {
-    return {
-      success: false,
-      conflicts
-    }
-  }
-
-  const createdVoters = await prisma.voters.createMany({
-    data: voters.map(voter => ({
+const createVoter = async (voter: Voter) => {
+  const voter_ = await prisma.voters.create({
+    data: {
       name: voter.name,
       admid: voter.admid,
       grade: voter.grade,
       house: voter.house,
       class: voter.class,
       voted: voter.voted,
-      votedInfo: voter.votedInfo
-    }))
-  })
+      votedInfo: voter.votedInfo,
+    },
+  });
+  return voter_;
+};
+
+const createMultipleVoters = async (voters: Voter[]) => {
+  const admids = voters.map((v) => v.admid);
+
+  const existingVoters = await prisma.voters.findMany({
+    where: {
+      admid: {
+        in: admids,
+      },
+    },
+  });
+
+  const existingMap = new Map(existingVoters.map((v) => [v.admid, v]));
+
+  const conflicts = voters
+    .filter((v) => existingMap.has(v.admid))
+    .map((v) => ({
+      uploadedRow: v,
+      existingRow: existingMap.get(v.admid)!,
+    }));
+
+  if (conflicts.length > 0) {
+    return {
+      success: false,
+      conflicts,
+    };
+  }
+
+  const createdVoters = await prisma.voters.createMany({
+    data: voters.map((voter) => ({
+      name: voter.name,
+      admid: voter.admid,
+      grade: voter.grade,
+      house: voter.house,
+      class: voter.class,
+      voted: voter.voted,
+      votedInfo: voter.votedInfo,
+    })),
+  });
 
   return {
     success: true,
-    created: createdVoters.count
-  }
-}
+    created: createdVoters.count,
+  };
+};
 
-const updateVoter = async (voter:Voter) => {
-    const voter_ = await prisma.voters.update({
-        where: {
-            admid: voter.admid
-        },
-        data: {
-            name: voter.name,
-            grade: voter.grade,
-            house: voter.house,
-            class: voter.class,
-            voted: voter.voted,
-            votedInfo: voter.votedInfo
-        }
-    })
-    return voter_;
-}
+const updateVoter = async (voter: Voter) => {
+  const voter_ = await prisma.voters.update({
+    where: {
+      admid: voter.admid,
+    },
+    data: {
+      name: voter.name,
+      grade: voter.grade,
+      house: voter.house,
+      class: voter.class,
+      voted: voter.voted,
+      votedInfo: voter.votedInfo,
+    },
+  });
+  return voter_;
+};
 
 const deleteVoter = async (admid: number) => {
-    const voter = await prisma.voters.delete({
-        where: {
-            admid: admid
-        }
-    })
-    return voter;
-}
+  const voter = await prisma.voters.delete({
+    where: {
+      admid: admid,
+    },
+  });
+  return voter;
+};
 
-const deleteVotersByClassAndGrade = async (className: string, grade: number) => {
-    const voters = await prisma.voters.deleteMany({
-        where: {
-            class: className,
-            grade: grade
-        }
-    })
-    return voters;
-}
+const deleteVotersByClassAndGrade = async (
+  className: string,
+  grade: number,
+) => {
+  const voters = await prisma.voters.deleteMany({
+    where: {
+      class: className,
+      grade: grade,
+    },
+  });
+  return voters;
+};
 
 const deleteVotersByHouse = async (house: string) => {
-    const voters = await prisma.voters.deleteMany({
-        where: {
-            house: house
-        }
-    })
-    return voters;
-}
+  const voters = await prisma.voters.deleteMany({
+    where: {
+      house: house,
+    },
+  });
+  return voters;
+};
 
 const deleteVotersByGrade = async (grade: number) => {
-    const voters = await prisma.voters.deleteMany({
-        where: {
-            grade: grade
-        }
-    })
-    return voters;
-}
+  const voters = await prisma.voters.deleteMany({
+    where: {
+      grade: grade,
+    },
+  });
+  return voters;
+};
 
 const deleteAllVoters = async () => {
-    const voters = await prisma.voters.deleteMany({})
-    return voters;
-}
+  const voters = await prisma.voters.deleteMany({});
+  return voters;
+};
 
 const getGradesAndCount = async () => {
-    const grades = await prisma.voters.groupBy({
-        by: ['grade'],
-        _count: {
-            grade: true
-        }
+  const grades = await prisma.voters.groupBy({
+    by: ["grade"],
+    _count: {
+      grade: true,
+    },
+  });
+  return grades.map((grade) => ({
+    grade: grade.grade,
+    count: grade._count.grade,
+  }));
+};
+
+const markAbsent = async (admids: number[]) => {
+  await prisma.$transaction(async (tx) => {
+    // Delete all votes cast by these voters
+    await tx.vote.deleteMany({
+      where: {
+        voterAdmid: {
+          in: admids,
+        },
+      },
     });
-    return grades.map(grade => ({
-        grade: grade.grade,
-        count: grade._count.grade
-    }));
-}
+
+    // Mark them as absent and not voted
+    const voters = await tx.voters.findMany({
+      where: {
+        admid: {
+          in: admids,
+        },
+      },
+    });
+
+    await Promise.all(
+      voters.map((voter) =>
+        tx.voters.update({
+          where: {
+            admid: voter.admid,
+          },
+          data: {
+            voted: false,
+            votedInfo: {
+              ...(voter.votedInfo as any),
+              absent: true,
+              editedAt: new Date().toISOString(),
+              votingData: {},
+            },
+          },
+        }),
+      ),
+    );
+  });
+};
+
+const markPresent = async (admids: number[]) => {
+  await prisma.$transaction(async (tx) => {
+    const voters = await tx.voters.findMany({
+      where: {
+        admid: {
+          in: admids,
+        },
+      },
+    });
+
+    await Promise.all(
+      voters.map((voter) =>
+        tx.voters.update({
+          where: {
+            admid: voter.admid,
+          },
+          data: {
+            votedInfo: {
+              ...(voter.votedInfo as any),
+              absent: false,
+              editedAt: new Date().toISOString(),
+            },
+          },
+        }),
+      ),
+    );
+  });
+};
+
+const deleteVotes = async (admids: number[]) => {
+  await prisma.$transaction(async (tx) => {
+    await tx.vote.deleteMany({
+      where: {
+        voterAdmid: {
+          in: admids,
+        },
+      },
+    });
+
+    const voters = await tx.voters.findMany({
+      where: {
+        admid: {
+          in: admids,
+        },
+      },
+    });
+
+    await Promise.all(
+      voters.map((voter) =>
+        tx.voters.update({
+          where: {
+            admid: voter.admid,
+          },
+          data: {
+            voted: false,
+            votedInfo: {
+              ...(voter.votedInfo as any),
+              editedAt: new Date().toISOString(),
+              votingData: {},
+            },
+          },
+        }),
+      ),
+    );
+  });
+};
+
+const deleteVoters = async (admids: number[]) => {
+  await prisma.$transaction(async (tx) => {
+    await tx.voters.deleteMany({
+      where: {
+        admid: {
+          in: admids,
+        },
+      },
+    });
+  });
+};
+
+const getClassesAndCount = async (grade: number) => {
+  const classes = await prisma.voters.groupBy({
+    by: ["class"],
+    where: {
+      grade: grade,
+    },
+    _count: {
+      class: true,
+    },
+  });
+  return classes.map((cls) => ({
+    class: cls.class,
+    count: cls._count.class,
+  }));
+};
 
 export {
-    getVoters,
-    getVotersWithoutVotedInfo,
-    getVotedVoters,
-    getUnvotedVoters,
-    getVotedCount,
-    getUnvotedCount,
-    getVotersByClass,
-    getVotersByGrade,
-    getVotersByHouse,
-    getVotersByClassAndGrade,
-    createVoter,
-    createMultipleVoters,
-    updateVoter,
-    deleteVoter,
-    deleteVotersByClassAndGrade,
-    deleteVotersByHouse,
-    deleteVotersByGrade,
-    deleteAllVoters,
-    getGradesAndCount,
-    Voter
-}
+  getVoters,
+  getVotersWithoutVotedInfo,
+  getVotedVoters,
+  getUnvotedVoters,
+  getVotedCount,
+  getUnvotedCount,
+  getVotersByClass,
+  getVotersByGrade,
+  getVotersByHouse,
+  getVotersByClassAndGrade,
+  createVoter,
+  createMultipleVoters,
+  updateVoter,
+  deleteVoter,
+  deleteVotersByClassAndGrade,
+  deleteVotersByHouse,
+  deleteVotersByGrade,
+  deleteAllVoters,
+  getGradesAndCount,
+  markAbsent,
+  markPresent,
+  deleteVotes,
+  deleteVoters,
+  getClassesAndCount,
+  Voter,
+};

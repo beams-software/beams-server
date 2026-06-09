@@ -22,7 +22,15 @@ const getPositionInfo = async (id: number) => {
             id: id
         },
         include: {
-            candidates: true
+            candidates: {
+                include: {
+                    _count: {
+                        select: {
+                            votes: true
+                        }
+                    }
+                }
+            },
         }
     });
 

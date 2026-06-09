@@ -17,6 +17,7 @@ model Positions {
   name           String
   wcs            String
   candidates     Candidates[]
+  votes          Vote[]
 }
 
 model Candidates {
@@ -24,10 +25,11 @@ model Candidates {
   name       String
   grade      Int
   house      String
-  votes      Int       @default(0)
+  startingVotes      Int       @default(0)
   photo      String
   position   Positions @relation(fields: [positionId], references: [id], onDelete: Cascade)
   positionId Int
+  votes      Vote[]
 }
 
 model Voters {
@@ -38,4 +40,22 @@ model Voters {
   house     String
   voted     Boolean @default(false)
   votedInfo Json
+  votes     Vote[]
+}
+
+
+model Vote {
+  id             Int        @id @default(autoincrement())
+
+  voterAdmid     Int
+  candidateAdmid Int
+  positionId     Int
+
+  voter          Voters     @relation(fields: [voterAdmid], references: [admid], onDelete: Cascade)
+  candidate      Candidates @relation(fields: [candidateAdmid], references: [admid], onDelete: Cascade)
+  position       Positions  @relation(fields: [positionId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime   @default(now())
+
+  @@unique([voterAdmid, positionId])
 }
