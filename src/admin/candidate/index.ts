@@ -34,6 +34,8 @@ router.post("/createCandidate", uploadCandidate.single('photo'), async (req, res
     const parsedVotes = parseInt(votes);
     const parsedPositionId = parseInt(positionId);
     const parsedGrade = parseInt(grade);
+    const fileName = req.file?.filename as string;
+    const filePath = `./static/${fileName}`;
     try {
         const candidate = await createCandidate({
             admid: parsedAdmid,
@@ -41,7 +43,7 @@ router.post("/createCandidate", uploadCandidate.single('photo'), async (req, res
             grade: parsedGrade,
             house,
             startingVotes: parsedVotes,
-            photo: req.file?.filename as string,
+            photo: fileName,
             positionId: parsedPositionId
         });
         res.json({
@@ -49,6 +51,7 @@ router.post("/createCandidate", uploadCandidate.single('photo'), async (req, res
             result: candidate
         })
     } catch (error) {
+        fs.unlink(filePath, (err) => {});
         res.json({
             status: 500,
             result: "Error creating candidate",

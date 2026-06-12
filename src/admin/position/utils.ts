@@ -29,6 +29,9 @@ const getPositionInfo = async (id: number) => {
                             votes: true
                         }
                     }
+                },
+                orderBy: {
+                    name: "asc"
                 }
             },
         }

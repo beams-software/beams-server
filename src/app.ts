@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import prisma from './prisma';
 import adminRoutes from './admin'
+import votingRoutes from './voting'
 import cors from "cors"
 
 require('dotenv').config()
@@ -16,5 +17,7 @@ app.get('/ping', (req: Request, res: Response) => {
 app.use('/static', express.static('./static'))
 
 app.use('/admin', adminRoutes);
+
+app.use("/voting", votingRoutes)
 
 export default app;

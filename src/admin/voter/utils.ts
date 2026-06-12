@@ -1,3 +1,4 @@
+import z from "zod";
 import prisma from "../../prisma";
 
 interface Voter {
@@ -9,6 +10,22 @@ interface Voter {
   voted: boolean;
   votedInfo: object;
 }
+
+const voteSubmissionSchema = z.object({
+  admid: z.number(),
+  votedInfo: z.object({
+    createdAt: z.string().default(() => new Date().toISOString()),
+    editedAt: z.string().default(() => new Date().toISOString()),
+    absent: z.stringbool().default(false).or(z.boolean().default(false)),
+    votingData: z.object({
+      votedAt: z.string(),
+      votedComputer: z.string(),
+      toWho: z.array(
+        z.object({ positionId: z.number(), candidateAdmId: z.number() }),
+      ),
+    }),
+  }),
+});
 
 const getVoters = async () => {
   const voters = await prisma.voters.findMany({});
@@ -374,6 +391,45 @@ const getClassesAndCount = async (grade: number) => {
   }));
 };
 
+const getVoterByAdmidAndHouse = async (admid: number, house: string) => {
+  const voter = await prisma.voters.findUnique({
+    where: {
+      admid: admid,
+    },
+  });
+  if (voter) {
+    if (voter.house === house) {
+      return voter;
+    }
+    return null;
+  }
+  return null;
+};
+
+const submitVote = async (
+  voteSubmissionData: z.infer<typeof voteSubmissionSchema>,
+) => {
+  await prisma.$transaction([
+    prisma.vote.createMany({
+      data: voteSubmissionData.votedInfo.votingData.toWho.map((vote) => ({
+        voterAdmid: voteSubmissionData.admid,
+        candidateAdmid: vote.candidateAdmId,
+        positionId: vote.positionId,
+      })),
+    }),
+
+    prisma.voters.update({
+      where: {
+        admid: voteSubmissionData.admid,
+      },
+      data: {
+        voted: true,
+        votedInfo: voteSubmissionData.votedInfo,
+      },
+    }),
+  ]);
+};
+
 export {
   getVoters,
   getVotersWithoutVotedInfo,
@@ -399,5 +455,8 @@ export {
   deleteVotes,
   deleteVoters,
   getClassesAndCount,
+  getVoterByAdmidAndHouse,
+  submitVote,
+  voteSubmissionSchema,
   Voter,
 };

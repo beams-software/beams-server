@@ -50,7 +50,40 @@ export const multipleVoterSchema = z.array(
     house: z.enum(["WINTER", "SUMMER", "SPRING"]),
     class: z.coerce.string(),
     voted: z.stringbool().default(false).or(z.boolean().default(false)),
-    votedInfo: z.object({
+    votedInfo: z
+      .object({
+        createdAt: z.string().default(() => new Date().toISOString()),
+        editedAt: z.string().default(() => new Date().toISOString()),
+        absent: z.stringbool().default(false).or(z.boolean().default(false)),
+        votingData: z
+          .object({
+            votedAt: z.string(),
+            votedComputer: z.string(),
+            toWho: z.array(
+              z.object({ positionId: z.number(), candidateAdmId: z.number() }),
+            ),
+          })
+          .or(z.object({}))
+          .default({}),
+      })
+      .default(() => ({
+        createdAt: new Date().toISOString(),
+        editedAt: new Date().toISOString(),
+        absent: false,
+        votingData: {},
+      })),
+  }),
+);
+
+export const VoterSchema = z.object({
+  admid: z.coerce.number(),
+  name: z.coerce.string(),
+  grade: z.coerce.number(),
+  house: z.enum(["WINTER", "SUMMER", "SPRING"]),
+  class: z.coerce.string(),
+  voted: z.stringbool().default(false).or(z.boolean().default(false)),
+  votedInfo: z
+    .object({
       createdAt: z.string().default(() => new Date().toISOString()),
       editedAt: z.string().default(() => new Date().toISOString()),
       absent: z.stringbool().default(false).or(z.boolean().default(false)),
@@ -64,32 +97,13 @@ export const multipleVoterSchema = z.array(
         })
         .or(z.object({}))
         .default({}),
-    }),
-  }),
-);
-
-export const VoterSchema = z.object({
-  admid: z.coerce.number(),
-  name: z.coerce.string(),
-  grade: z.coerce.number(),
-  house: z.enum(["WINTER", "SUMMER", "SPRING"]),
-  class: z.coerce.string(),
-  voted: z.stringbool().default(false).or(z.boolean().default(false)),
-  votedInfo: z.object({
-    createdAt: z.string().default(() => new Date().toISOString()),
-    editedAt: z.string().default(() => new Date().toISOString()),
-    absent: z.stringbool().default(false).or(z.boolean().default(false)),
-    votingData: z
-      .object({
-        votedAt: z.string(),
-        votedComputer: z.string(),
-        toWho: z.array(
-          z.object({ positionId: z.number(), candidateAdmId: z.number() }),
-        ),
-      })
-      .or(z.object({}))
-      .default({}),
-  }),
+    })
+    .default(() => ({
+      createdAt: new Date().toISOString(),
+      editedAt: new Date().toISOString(),
+      absent: false,
+      votingData: {},
+    })),
 });
 
 router.get("/getVoters", async (req, res) => {
@@ -220,8 +234,8 @@ router.post("/createVoter", async (req, res) => {
     res.json({
       status: 400,
       success: false,
-      error: error
-    })
+      error: error,
+    });
   }
 });
 
@@ -485,14 +499,13 @@ router.post("/deleteVotes", async (req, res) => {
       status: 200,
       result: "Votes deleted for voters",
     });
+  } catch (error) {
+    res.json({
+      status: 500,
+      result: "Error deleting votes for voters",
+      error: error,
+    });
   }
-    catch (error) {
-      res.json({
-        status: 500,
-        result: "Error deleting votes for voters",
-        error: error,
-      });
-    }
 });
 
 router.post("/deleteVoters", async (req, res) => {
@@ -505,14 +518,13 @@ router.post("/deleteVoters", async (req, res) => {
       status: 200,
       result: "Voters deleted",
     });
+  } catch (error) {
+    res.json({
+      status: 500,
+      result: "Error deleting voters",
+      error: error,
+    });
   }
-    catch (error) {
-      res.json({
-        status: 500,
-        result: "Error deleting voters",
-        error: error,
-      });
-    }
 });
 
 router.get("/getClassesAndCount/:grade", async (req, res) => {

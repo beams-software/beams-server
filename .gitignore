@@ -6,3 +6,4 @@ prisma/migrations
 prisma/dev.**
 
 static/candidates/*
+static/file-*
