@@ -27,6 +27,7 @@ import {
   markPresent,
   updateVoter,
   Voter,
+  getVoterDetail,
 } from "./utils";
 import { upload } from "../../mult";
 import fs from "fs";
@@ -544,6 +545,15 @@ router.get("/getClassesAndCount/:grade", async (req, res) => {
       error: error,
     });
   }
+});
+
+router.get("/getVoterDetail/:admid", async (req, res) => {
+  const loggedIn = await returnIfNotAuthorized(req, res);
+  if (!loggedIn) return;
+  const admid = parseInt(req.params.admid);
+  res.json({
+    result: await getVoterDetail(admid)
+  })
 });
 
 export default router;

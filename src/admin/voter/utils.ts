@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { includes } from "zod";
 import prisma from "../../prisma";
 
 interface Voter {
@@ -430,6 +430,38 @@ const submitVote = async (
   ]);
 };
 
+const getVoterDetail = async (admid: number) => {
+  const voter = await prisma.voters.findUnique(
+    {
+      where: {
+        admid: admid
+      },
+      include: {
+        votes: {
+          include: {
+            candidate: {
+              select: {
+                name: true
+              }
+            },
+            position: {
+              select: {
+                name: true
+              }
+            }
+          },
+          orderBy: {
+            position: {
+              priorityNumber: 'desc'
+            } 
+          }
+        }
+      }
+    }
+  )
+  return voter
+}
+
 export {
   getVoters,
   getVotersWithoutVotedInfo,
@@ -458,5 +490,6 @@ export {
   getVoterByAdmidAndHouse,
   submitVote,
   voteSubmissionSchema,
+  getVoterDetail,
   Voter,
 };
