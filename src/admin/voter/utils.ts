@@ -462,6 +462,120 @@ const getVoterDetail = async (admid: number) => {
   return voter
 }
 
+const getLiveFeedVoterStats = async () => {
+  const [totalPerGrade, votedPerGrade] = await Promise.all([
+    prisma.voters.groupBy({
+      by: ["grade"],
+      _count: {
+        _all: true,
+      },
+    }),
+
+    prisma.voters.groupBy({
+      by: ["grade"],
+      where: {
+        voted: true,
+      },
+      _count: {
+        _all: true,
+      },
+    }),
+  ]);
+
+  const all_result = totalPerGrade.map((total) => ({
+    grade: total.grade,
+    totalVoters: total._count._all,
+    votedVoters:
+      votedPerGrade.find((v) => v.grade === total.grade)?._count._all ?? 0,
+  }));
+
+  const [totalClasses, votedClasses] = await Promise.all([
+    prisma.voters.groupBy({
+      by: ["grade", "class"],
+      _count: {
+        _all: true,
+      },
+    }),
+
+    prisma.voters.groupBy({
+      by: ["grade", "class"],
+      where: {
+        voted: true,
+      },
+      _count: {
+        _all: true,
+      },
+    }),
+  ]);
+
+  const result = totalClasses.map((cls) => ({
+    grade: cls.grade,
+    class: cls.class,
+    totalVoters: cls._count._all,
+    votedVoters:
+      votedClasses.find((v) => v.grade === cls.grade && v.class === cls.class)
+        ?._count._all ?? 0,
+  }));
+
+  type GradeStats = {
+    grade: number;
+    classes: {
+      class: string;
+      totalVoters: number;
+      votedVoters: number;
+    }[];
+  };
+
+  const grouped: GradeStats[] = Object.values(
+    result.reduce<Record<number, GradeStats>>((acc, row) => {
+      if (!acc[row.grade]) {
+        acc[row.grade] = {
+          grade: row.grade,
+          classes: [],
+        };
+      }
+
+      acc[row.grade].classes.push({
+        class: row.class,
+        totalVoters: row.totalVoters,
+        votedVoters: row.votedVoters,
+      });
+
+      return acc;
+    }, {}),
+  );
+
+  const grouped_result = grouped.map((p) => {
+    return [
+      `Grade ${p.grade}`,
+      p.classes.map((c) => {
+        return {
+          key: c.class,
+          value: (c.votedVoters / c.totalVoters) * 100,
+          realValue: c.votedVoters,
+          total: c.totalVoters,
+        };
+      }),
+    ];
+  });
+
+  const all_result_final = [
+    "ALL GRADES",
+    all_result.map((p) => {
+      return {
+        key: `Grade ${p.grade}`,
+        value: (p.votedVoters / p.totalVoters) * 100,
+        realValue: p.votedVoters,
+        total: p.totalVoters,
+      };
+    }),
+  ];
+
+  const finalResult = [all_result_final, ...grouped_result];
+
+  return finalResult
+};
+
 export {
   getVoters,
   getVotersWithoutVotedInfo,
@@ -491,5 +605,6 @@ export {
   submitVote,
   voteSubmissionSchema,
   getVoterDetail,
+  getLiveFeedVoterStats,
   Voter,
 };

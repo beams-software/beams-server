@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createPosition, deletePosition, getDetailedPositions, getPositionInfo, getPositions, updatePosition, updatePriorities } from "./utils";
+import { createPosition, deletePosition, getDetailedPositions, getPositionInfo, getPositions, liveFeedPositionData, updatePosition, updatePriorities } from "./utils";
 import { returnIfNotAuthorized } from "../tokens/utils";
 import fs from "fs";
 
@@ -130,5 +130,12 @@ router.post("/reorderPositions", async (req, res) => {
         result: done
     })
 });
+
+router.get("/liveFeedPositionData", async (req, res) => {
+    const loggedIn = await returnIfNotAuthorized(req, res);
+    if (!loggedIn) return;
+    const result = await liveFeedPositionData();
+    res.json(result)
+})
 
 export default router;

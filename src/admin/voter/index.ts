@@ -28,6 +28,7 @@ import {
   updateVoter,
   Voter,
   getVoterDetail,
+  getLiveFeedVoterStats,
 } from "./utils";
 import { upload } from "../../mult";
 import fs from "fs";
@@ -555,5 +556,12 @@ router.get("/getVoterDetail/:admid", async (req, res) => {
     result: await getVoterDetail(admid)
   })
 });
+
+router.get("/liveFeedVoterStats", async (req, res) => {
+  const loggedIn = await returnIfNotAuthorized(req, res);
+  if (!loggedIn) return;
+  const result = await getLiveFeedVoterStats()
+  res.json(result)
+})
 
 export default router;

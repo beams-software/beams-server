@@ -110,4 +110,29 @@ const updatePriorities = async (priorities: { id: number, priorityNumber: number
     return true;
 }
 
-export { getPositions, createPosition, updatePosition, deletePosition, getDetailedPositions, getPositionInfo, updatePriorities };
+const liveFeedPositionData = async () => {
+    const result = await prisma.positions.findMany({
+        include: {
+            candidates: {
+                include: {
+                    _count: {
+                        select: {
+                            votes: true
+                        }
+                    }
+                },
+                orderBy: {
+                    votes: {
+                        _count: 'desc'
+                    }
+                }
+            }
+        },
+        orderBy: {
+            priorityNumber: 'desc'
+        }
+    });
+    return result
+}
+
+export { getPositions, createPosition, updatePosition, deletePosition, getDetailedPositions, getPositionInfo, updatePriorities, liveFeedPositionData };

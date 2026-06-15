@@ -1,4 +1,4 @@
-import app from './app';
+import { app, server} from './app';
 import dgram from 'dgram';
 import dotenv from 'dotenv';
 
@@ -6,7 +6,7 @@ dotenv.config();
 
 const PORT = parseInt(process.env.PORT || "3001", 10);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 

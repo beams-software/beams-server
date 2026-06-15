@@ -2,12 +2,13 @@ import { Router } from "express";
 import { getVoterByAdmidAndHouse, submitVote, voteSubmissionSchema } from "../admin/voter/utils";
 import { z } from "zod";
 import { getCandidates } from "../admin/candidate/utils";
+import { getIO } from "../socketManager"
 
 const router = Router();
 
 router.get("/heartbeat", async (req, res) => {
   res.json({
-    v: true,
+    v: req.app.locals.votingEnabled,
   });
 });
 
@@ -69,6 +70,7 @@ router.post("/submitVote", async (req, res) => {
         res.json({
             status: 200
         })
+        getIO().emit("submitted-vote", { admid : data.admid, votedComputer : data.votedInfo.votingData.votedComputer })
     } catch (error) {
         res.status(500).json({
             status: 500
