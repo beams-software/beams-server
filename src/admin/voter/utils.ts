@@ -409,6 +409,21 @@ const getVoterByAdmidAndHouse = async (admid: number, house: string) => {
 const submitVote = async (
   voteSubmissionData: z.infer<typeof voteSubmissionSchema>,
 ) => {
+  
+  const voter = await prisma.voters.findUnique({
+    where: {
+      admid: voteSubmissionData.admid,
+    },
+  });
+
+  if (!voter) {
+    throw new Error("No Voter Found");
+  }
+
+  if (voter.voted) {
+    throw new Error("Voter already voted");
+  }
+
   await prisma.$transaction([
     prisma.vote.createMany({
       data: voteSubmissionData.votedInfo.votingData.toWho.map((vote) => ({
