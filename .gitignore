@@ -7,3 +7,5 @@ prisma/dev.**
 
 static/candidates/*
 static/file-*
+
+dist/

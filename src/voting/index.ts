@@ -24,7 +24,7 @@ router.get("/getVoter/:admid/:house", async (req, res) => {
 
 router.get("/getCandidates", async (req, res) => {
   const rawCandidates = await getCandidates();
-  type CleanedCandidatesArray = Omit<typeof rawCandidates[number], 'position'>[];
+  type CleanedCandidatesArray = Omit<typeof rawCandidates[number], 'position' | '_count'>[];
   const grouped = Object.values(
     rawCandidates.reduce(
       (acc, candidate) => {
@@ -37,9 +37,9 @@ router.get("/getCandidates", async (req, res) => {
           };
         }
 
-        const { position, ...candidateWithoutPosition } = candidate;
+        const { position, _count,...candidateWithoutPositionAndCount } = candidate;
 
-        acc[positionId].candidates.push(candidateWithoutPosition);
+        acc[positionId].candidates.push(candidateWithoutPositionAndCount);
 
         return acc;
       },
